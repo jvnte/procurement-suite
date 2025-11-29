@@ -1,7 +1,9 @@
+import inspect
 from contextlib import asynccontextmanager
 from typing import AsyncIterator, TypedDict, cast
 
 from fastapi import APIRouter, Depends, FastAPI, Request
+from fastmcp import FastMCP
 from uvicorn import Config, Server
 
 from asklio_api.config import AppConfig
@@ -17,10 +19,31 @@ class ShellState(TypedDict):
 
 def build_app(intake: IntakeApi) -> FastAPI:
     @asynccontextmanager
-    async def lifespan(app: FastAPI) -> AsyncIterator[ShellState]:
-        yield {"intake": intake}
+    async def app_lifespan(app: FastAPI):
+        yield
 
-    app = FastAPI(lifespan=lifespan)
+    mcp = FastMCP()
+    mcp.resource(
+        name="Get Commodity Groups",
+        uri="data://commodity_groups",
+        title="Get information about all valid commodity groups",
+        description=inspect.getdoc(intake.get_commodity_groups),
+    )(intake.get_commodity_groups)
+    mcp.tool(
+        name="Perform Procurement Request",
+        title="Try to perform a procurement request",
+        description=inspect.getdoc(intake.create_procurement_request),
+    )(intake.create_procurement_request)
+    mcp_app = mcp.http_app(path="/mcp")
+
+    @asynccontextmanager
+    async def combined_lifespan(app: FastAPI) -> AsyncIterator[ShellState]:
+        async with app_lifespan(app):
+            async with mcp_app.lifespan(app):
+                yield {"intake": intake}
+
+    app = FastAPI(lifespan=combined_lifespan)
+    app.mount("/v1", mcp_app)
     app.include_router(intake_router)
     return app
 
