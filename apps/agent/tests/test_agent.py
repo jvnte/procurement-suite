@@ -2,12 +2,18 @@ import io
 
 from fastapi.testclient import TestClient
 
+from agent_api.agent import AgentApi
 from agent_api.shell import build_app
+
+
+class StubAgent(AgentApi):
+    async def complete(self, file_content: bytes) -> dict[str, str]:
+        return {"status": "completed"}
 
 
 def test_post_agent_intake_gives_200():
     # given an app
-    app = build_app()
+    app = build_app(StubAgent())
 
     # when we upload a PDF file
     pdf_content = b"%PDF-1.4\n%fake pdf content"

@@ -1,5 +1,6 @@
 import asyncio
 
+from agent_api.agent import IntakeAgent
 from agent_api.config import AppConfig
 from agent_api.shell import Shell
 
@@ -9,7 +10,8 @@ class App:
 
     def __init__(self, config: AppConfig) -> None:
         self.config = config
-        self.shell = Shell(self.config)
+        self.agent = IntakeAgent()
+        self.shell = Shell(self.config, self.agent)
 
     async def run(self) -> None:
         async with asyncio.TaskGroup() as tg:

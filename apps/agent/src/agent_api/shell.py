@@ -4,19 +4,21 @@ from typing import AsyncIterator, TypedDict
 from fastapi import FastAPI
 from uvicorn import Config, Server
 
+from agent_api.agent import AgentApi
 from agent_api.config import AppConfig
 from agent_api.routers.agent import router as agent_router
 
 
 class ShellState(TypedDict):
     """State that is shared between requests."""
-    pass
+
+    agent: AgentApi
 
 
-def build_app() -> FastAPI:
+def build_app(agent: AgentApi) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[ShellState]:
-        yield {}
+        yield {"agent": agent}
 
     app = FastAPI(lifespan=lifespan)
     app.include_router(agent_router)
@@ -26,9 +28,9 @@ def build_app() -> FastAPI:
 class Shell:
     """Provide user access to our application."""
 
-    def __init__(self, config: AppConfig) -> None:
+    def __init__(self, config: AppConfig, agent: AgentApi) -> None:
         self.config = config
-        self.app = build_app()
+        self.app = build_app(agent)
         self.server: Server | None = None
 
     async def run(self) -> None:
