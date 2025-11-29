@@ -10,8 +10,8 @@ class App:
 
     def __init__(self, config: AppConfig) -> None:
         self.config = config
-        self.agent = IntakeAgent()
-        self.shell = Shell(self.config, self.agent)
+        self.intake_agent = IntakeAgent()
+        self.shell = Shell(self.config, self.intake_agent)
 
     async def run(self) -> None:
         async with asyncio.TaskGroup() as tg:

@@ -11,11 +11,13 @@ router = APIRouter(prefix="/intake", tags=["intake"])
 
 def get_intake(request: Request) -> IntakeApi:
     """Get intake API from request state."""
-    return cast(IntakeApi, request.state.intake)
+    return cast(IntakeApi, request.state.intake_agent)
 
 
 @router.get("/commodity_groups", status_code=status.HTTP_200_OK)
-async def get_commodity_groups(intake: IntakeApi = Depends(get_intake)) -> list[CommodityGroupInfo]:
+async def get_commodity_groups(
+    intake: IntakeApi = Depends(get_intake),
+) -> list[CommodityGroupInfo]:
     """
     Get all available commodity groups.
     """
