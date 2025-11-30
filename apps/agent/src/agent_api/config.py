@@ -9,6 +9,7 @@ class AppConfig(NamedTuple):
 
     host: str
     port: int
+    openai_key: str
 
     @classmethod
     def from_env(cls) -> AppConfig:
@@ -16,12 +17,10 @@ class AppConfig(NamedTuple):
         return cls(
             host=os.environ["API_HOST"],
             port=int(os.environ["API_PORT"]),
+            openai_key=str(os.environ["OPENAI_API_KEY"]),
         )
 
     @classmethod
     def with_free_port(cls) -> AppConfig:
         """Create a configuration with a free port, useful for testing"""
-        return cls(
-            host="0.0.0.0",
-            port=0,
-        )
+        return cls(host="0.0.0.0", port=0, openai_key="")

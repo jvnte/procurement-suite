@@ -10,7 +10,7 @@ class App:
 
     def __init__(self, config: AppConfig) -> None:
         self.config = config
-        self.intake_agent = IntakeAgent()
+        self.intake_agent = IntakeAgent(openai_api_key=config.openai_key)
         self.shell = Shell(self.config, self.intake_agent)
 
     async def run(self) -> None:
