@@ -15,8 +15,10 @@
     "@mui/icons-material": "^7.3.5",
     "@mui/material": "latest",
     "@tailwindcss/vite": "latest",
+    "pdfjs-dist": "^5.4.449",
     "react": "latest",
     "react-dom": "latest",
+    "react-pdf": "^10.2.0",
     "react-router-dom": "^7.9.6",
     "tailwindcss": "latest"
   },

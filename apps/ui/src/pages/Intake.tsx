@@ -7,13 +7,24 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
+import Collapse from '@mui/material/Collapse';
 import CircularProgress from '@mui/material/CircularProgress';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import SendIcon from '@mui/icons-material/Send';
 import ClearIcon from '@mui/icons-material/Clear';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import IconButton from '@mui/material/IconButton';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+
+// Configure PDF.js worker
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 interface OrderLine {
   position_description: string;
@@ -56,6 +67,9 @@ export default function Intake() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [numPages, setNumPages] = useState<number>(0);
+  const [isPdfExpanded, setIsPdfExpanded] = useState(true);
 
   const handleInputChange = (field: keyof Omit<ProcurementRequestData, 'order_lines' | 'total_cost'>) => (
     event: React.ChangeEvent<HTMLInputElement>
@@ -126,6 +140,10 @@ export default function Intake() {
     setError(null);
     setSuccess(null);
 
+    // Create blob URL for PDF viewer
+    const url = URL.createObjectURL(file);
+    setPdfUrl(url);
+
     try {
       const formDataUpload = new FormData();
       formDataUpload.append('file', file);
@@ -172,7 +190,13 @@ export default function Intake() {
   };
 
   const handleRemoveFile = () => {
+    // Revoke the blob URL to free memory
+    if (pdfUrl) {
+      URL.revokeObjectURL(pdfUrl);
+      setPdfUrl(null);
+    }
     setUploadedFile(null);
+    setNumPages(0);
     setError(null);
     setSuccess(null);
   };
@@ -217,7 +241,14 @@ export default function Intake() {
         total_cost: 0,
         department: '',
       });
+
+      // Clean up PDF
+      if (pdfUrl) {
+        URL.revokeObjectURL(pdfUrl);
+        setPdfUrl(null);
+      }
       setUploadedFile(null);
+      setNumPages(0);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit procurement request');
     } finally {
@@ -232,58 +263,36 @@ export default function Intake() {
           Create Procurement Request
         </Typography>
 
-        {error && (
-          <Alert severity="error" sx={{ mt: 2 }} onClose={() => setError(null)}>
+        <Snackbar
+          open={!!error}
+          autoHideDuration={6000}
+          onClose={() => setError(null)}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        >
+          <Alert severity="error" onClose={() => setError(null)} sx={{ width: '100%' }}>
             {error}
           </Alert>
-        )}
+        </Snackbar>
 
-        {success && (
-          <Alert severity="success" sx={{ mt: 2 }} onClose={() => setSuccess(null)}>
+        <Snackbar
+          open={!!success}
+          autoHideDuration={6000}
+          onClose={() => setSuccess(null)}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        >
+          <Alert severity="success" onClose={() => setSuccess(null)} sx={{ width: '100%' }}>
             {success}
           </Alert>
-        )}
+        </Snackbar>
 
-        <Paper sx={{ p: 3, mt: 3 }}>
-          <Typography variant="h6" gutterBottom>
-            Upload Document (Optional)
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Upload a procurement document to automatically extract and pre-fill the form fields below.
-          </Typography>
+        <Box sx={{ display: 'flex', gap: 3, mt: 3, flexDirection: { xs: 'column', md: 'row' } }}>
+          {/* Left Column - Form */}
+          <Paper sx={{ p: 3, flex: 1 }}>
+            <Typography variant="h6" gutterBottom>
+              Procurement Request Form
+            </Typography>
 
-          <Box sx={{ mb: 4, display: 'flex', gap: 2, alignItems: 'center' }}>
-            <Button
-              component="label"
-              variant="outlined"
-              startIcon={uploadLoading ? <CircularProgress size={20} /> : <CloudUploadIcon />}
-              disabled={uploadLoading}
-            >
-              {uploadedFile ? uploadedFile.name : 'Upload Document'}
-              <input
-                type="file"
-                hidden
-                accept=".pdf,.doc,.docx,.txt"
-                onChange={handleFileUpload}
-              />
-            </Button>
-            {uploadedFile && !uploadLoading && (
-              <Button
-                variant="outlined"
-                color="error"
-                startIcon={<ClearIcon />}
-                onClick={handleRemoveFile}
-              >
-                Remove
-              </Button>
-            )}
-          </Box>
-
-          <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>
-            Manual Entry
-          </Typography>
-
-          <Box component="form" onSubmit={handleSubmit}>
+            <Box component="form" onSubmit={handleSubmit}>
             <Stack spacing={3}>
               <Typography variant="h6" gutterBottom>
                 Requestor Information
@@ -441,8 +450,141 @@ export default function Intake() {
                 </Button>
               </Box>
             </Stack>
+            </Box>
+          </Paper>
+
+          {/* Right Column - PDF Viewer */}
+          <Box sx={{ width: { xs: '100%', md: '45%' }, position: { md: 'sticky' }, top: { md: 20 }, alignSelf: 'flex-start' }}>
+            <Paper sx={{ p: 3 }}>
+              <Typography variant="h6" gutterBottom>
+                Document Upload
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Upload a PDF to auto-fill the form fields.
+              </Typography>
+
+              <Box>
+                {!uploadedFile ? (
+                  <Button
+                    component="label"
+                    variant="outlined"
+                    startIcon={uploadLoading ? <CircularProgress size={20} /> : <CloudUploadIcon />}
+                    disabled={uploadLoading}
+                    fullWidth
+                  >
+                    Upload PDF Document
+                    <input
+                      type="file"
+                      hidden
+                      accept=".pdf"
+                      onChange={handleFileUpload}
+                    />
+                  </Button>
+                ) : (
+                  <Stack spacing={2}>
+                    <Paper
+                      sx={{
+                        p: 2,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        bgcolor: 'success.50',
+                        border: 1,
+                        borderColor: 'success.200',
+                        flexWrap: { xs: 'wrap', sm: 'nowrap' }
+                      }}
+                    >
+                      <PictureAsPdfIcon sx={{ fontSize: { xs: 32, sm: 40 }, color: 'error.main', flexShrink: 0 }} />
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography
+                          variant="subtitle1"
+                          fontWeight="medium"
+                          sx={{
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          {uploadedFile.name}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
+                        >
+                          {(uploadedFile.size / 1024).toFixed(2)} KB • {numPages > 0 ? `${numPages} pages` : 'PDF'}
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', gap: 0.5, flexShrink: 0 }}>
+                        {pdfUrl && (
+                          <IconButton
+                            size="small"
+                            onClick={() => setIsPdfExpanded(!isPdfExpanded)}
+                          >
+                            {isPdfExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                          </IconButton>
+                        )}
+                        {!uploadLoading && (
+                          <IconButton
+                            size="small"
+                            color="error"
+                            onClick={handleRemoveFile}
+                          >
+                            <ClearIcon />
+                          </IconButton>
+                        )}
+                        {uploadLoading && <CircularProgress size={24} />}
+                      </Box>
+                    </Paper>
+
+                    {pdfUrl && (
+                      <Collapse in={isPdfExpanded}>
+                        <Paper
+                          sx={{
+                            maxHeight: 'calc(100vh - 300px)',
+                            overflow: 'auto',
+                            bgcolor: 'grey.100',
+                            p: 2,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: 2
+                          }}
+                        >
+                          <Document
+                            file={pdfUrl}
+                            onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+                            onLoadError={(error) => setError(`Failed to load PDF: ${error.message}`)}
+                            loading={
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <CircularProgress size={24} />
+                                <Typography>Loading PDF...</Typography>
+                              </Box>
+                            }
+                          >
+                            {Array.from(new Array(numPages), (_, index) => (
+                              <Box key={`page_${index + 1}`} sx={{ mb: 2 }}>
+                                <Typography variant="caption" sx={{ mb: 1, display: 'block', textAlign: 'center' }}>
+                                  Page {index + 1} of {numPages}
+                                </Typography>
+                                <Page
+                                  pageNumber={index + 1}
+                                  renderTextLayer={true}
+                                  renderAnnotationLayer={true}
+                                  width={Math.min(window.innerWidth * 0.35, 500)}
+                                />
+                              </Box>
+                            ))}
+                          </Document>
+                        </Paper>
+                      </Collapse>
+                    )}
+                  </Stack>
+                )}
+              </Box>
+            </Paper>
           </Box>
-        </Paper>
+        </Box>
       </Box>
     </Container>
   );
