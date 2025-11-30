@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from typing import AsyncIterator, TypedDict, cast
 
 from fastapi import APIRouter, Depends, FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastmcp import FastMCP
 from uvicorn import Config, Server
 
@@ -43,6 +44,16 @@ def build_app(intake: IntakeApi) -> FastAPI:
                 yield {"intake": intake}
 
     app = FastAPI(lifespan=combined_lifespan)
+
+    # Add CORS middleware
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
     app.mount("/v1", mcp_app)
     app.include_router(intake_router)
     return app

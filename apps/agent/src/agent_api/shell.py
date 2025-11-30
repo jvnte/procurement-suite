@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 from typing import AsyncIterator, TypedDict
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import Config, Server
 
 from agent_api.agent import AgentApi, IntakeAgent
@@ -21,6 +22,16 @@ def build_app(intake_agent: AgentApi) -> FastAPI:
         yield {"intake_agent": intake_agent}
 
     app = FastAPI(lifespan=lifespan)
+
+    # Add CORS middleware
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
     app.include_router(agent_router)
     return app
 
