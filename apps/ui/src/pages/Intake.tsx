@@ -209,7 +209,7 @@ export default function Intake() {
 
     try {
       const intakeApiUrl = import.meta.env.VITE_INTAKE_API_URL || 'http://localhost:8081';
-      const response = await fetch(`${intakeApiUrl}/intake/procurement_request`, {
+      const response = await fetch(`${intakeApiUrl}/intake/request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
