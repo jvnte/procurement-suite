@@ -1,4 +1,4 @@
-import { Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar } from '@mui/material';
+import { Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import DescriptionIcon from '@mui/icons-material/Description';
 import ListAltIcon from '@mui/icons-material/ListAlt';
@@ -28,7 +28,17 @@ export default function Sidebar() {
         },
       }}
     >
-      <Toolbar />
+      <Toolbar
+        sx={{
+          bgcolor: 'primary.main',
+          color: 'primary.contrastText',
+          boxShadow: 4
+        }}
+      >
+        <Typography variant="h6" noWrap component="div">
+          Procurement Suite
+        </Typography>
+      </Toolbar>
       <List>
         {menuItems.map((item) => (
           <ListItem key={item.text} disablePadding>
