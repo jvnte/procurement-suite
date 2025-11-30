@@ -1,6 +1,7 @@
 from typing import Any, Protocol
 
 from pydantic_ai import Agent, AgentRunResult, BinaryContent
+from pydantic_ai.mcp import MCPServerStreamableHTTP
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider
 
@@ -14,9 +15,10 @@ class AgentApi(Protocol):
 class IntakeAgent(AgentApi):
     """Manages agent operations including document processing."""
 
-    def __init__(self, openai_api_key: str) -> None:
+    def __init__(self, openai_api_key: str, mcp_server_url: str) -> None:
         self.agent = Agent(
             OpenAIChatModel("gpt-5", provider=OpenAIProvider(api_key=openai_api_key)),
+            toolsets=[MCPServerStreamableHTTP(mcp_server_url)],
             output_type=ProcurementRequestCreate,
         )
 
