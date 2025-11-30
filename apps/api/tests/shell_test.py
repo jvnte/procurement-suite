@@ -3,9 +3,13 @@ import asyncio
 from fastapi.testclient import TestClient
 
 from procurement_api.config import AppConfig
-from procurement_api.intake import IntakeApi
+from procurement_api.intake import CommodityGroupNotFoundException, IntakeApi
 from procurement_api.models.commodity_group import CommodityGroupInfo
-from procurement_api.repository import ProcurementRequestStatus
+from procurement_api.models.procurement import ProcurementRequestCreate
+from procurement_api.repository import (
+    ProcurementRequestStatus,
+    ProcurementRequestStored,
+)
 from procurement_api.shell import Shell, build_app
 
 
@@ -19,12 +23,23 @@ class StubIntake(IntakeApi):
     def is_valid_commodity_group(self, name: str) -> bool:
         return name == "Software"
 
-    def create_procurement_request(self): ...
-    def get_all_requests(self): ...
-    def get_request_by_id(self, request_id: str): ...
+    def create_procurement_request(
+        self, request: ProcurementRequestCreate
+    ) -> dict[str, str]:
+        if not self.is_valid_commodity_group(request.commodity_group):
+            raise CommodityGroupNotFoundException()
+        return {"message": "Procurement request created successfully"}
+
+    def get_all_requests(self) -> list[ProcurementRequestStored]:
+        return []
+
+    def get_request_by_id(self, request_id: str) -> ProcurementRequestStored | None:
+        return None
+
     def update_request_status(
         self, request_id: str, status: ProcurementRequestStatus
-    ): ...
+    ) -> ProcurementRequestStored | None:
+        return None
 
 
 async def test_shell_can_be_shutdown(config: AppConfig):
