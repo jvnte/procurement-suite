@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
 from typing import Protocol
 from uuid import uuid4
@@ -23,7 +23,7 @@ class ProcurementRequestStored:
         status: ProcurementRequestStatus = ProcurementRequestStatus.OPEN,
     ):
         self.id: str = str(uuid4())
-        self.created_at: datetime = datetime.utcnow()
+        self.created_at: datetime = datetime.now(UTC)
         self.request: ProcurementRequestCreate = request
         self.status: ProcurementRequestStatus = status
 
