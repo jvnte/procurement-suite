@@ -40,7 +40,7 @@ interface ProcurementRequest {
   vat_id: string;
   commodity_group: string;
   order_lines: OrderLine[];
-  total_cost: number;
+  total_cost?: number; // Optional since we calculate it from order_lines
   department: string;
 }
 
@@ -55,6 +55,11 @@ const statusColors: Record<string, 'default' | 'warning' | 'success'> = {
   open: 'default',
   'in-progress': 'warning',
   closed: 'success',
+};
+
+// Helper function to calculate total cost from order lines
+const calculateTotalCost = (orderLines: OrderLine[]): number => {
+  return orderLines.reduce((sum, line) => sum + line.total_price, 0);
 };
 
 export default function Requests() {
@@ -221,7 +226,7 @@ export default function Requests() {
                         Vendor: {request.request.vendor_name}
                       </Typography>
                       <Typography variant="h6" color="primary" sx={{ mt: 2 }}>
-                        €{request.request.total_cost.toFixed(2)}
+                        €{calculateTotalCost(request.request.order_lines).toFixed(2)}
                       </Typography>
                       <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
                         Created: {formatDate(request.created_at)}
@@ -393,7 +398,7 @@ export default function Requests() {
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
               <Paper sx={{ p: 2, bgcolor: 'primary.50' }}>
                 <Typography variant="h5">
-                  Total Cost: €{selectedRequest.request.total_cost.toFixed(2)}
+                  Total Cost: €{calculateTotalCost(selectedRequest.request.order_lines).toFixed(2)}
                 </Typography>
               </Paper>
             </Box>
