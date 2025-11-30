@@ -12,10 +12,12 @@
   "dependencies": {
     "@emotion/react": "latest",
     "@emotion/styled": "latest",
+    "@mui/icons-material": "^7.3.5",
     "@mui/material": "latest",
     "@tailwindcss/vite": "latest",
     "react": "latest",
     "react-dom": "latest",
+    "react-router-dom": "^7.9.6",
     "tailwindcss": "latest"
   },
   "devDependencies": {

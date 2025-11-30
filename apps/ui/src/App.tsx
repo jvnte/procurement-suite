@@ -1,46 +1,24 @@
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Link from '@mui/material/Link';
-import Slider from '@mui/material/Slider';
-import PopoverMenu from './PopoverMenu';
-import ProTip from './ProTip';
-
-function Copyright() {
-  return (
-    <Typography
-      variant="body2"
-      align="center"
-      sx={{
-        color: 'text.secondary',
-      }}
-    >
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Box, CssBaseline, Toolbar } from '@mui/material';
+import Sidebar from './components/Sidebar';
+import Home from './pages/Home';
+import Intake from './pages/Intake';
 
 export default function App() {
   return (
-    <Container maxWidth="sm">
-      <div className="my-4">
-        <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
-          Material UI Vite example with Tailwind CSS in TypeScript
-        </Typography>
-        <Slider
-          className="my-4"
-          defaultValue={30}
-          classes={{ active: 'shadow-none' }}
-          slotProps={{ thumb: { className: 'hover:shadow-none' } }}
-        />
-        <PopoverMenu />
-        <ProTip />
-        <Copyright />
-      </div>
-    </Container>
+    <BrowserRouter>
+      <Box sx={{ display: 'flex' }}>
+        <CssBaseline />
+        <Sidebar />
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          <Toolbar />
+          <Routes>
+            <Route path="/" element={<Navigate to="/home" replace />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/intake" element={<Intake />} />
+          </Routes>
+        </Box>
+      </Box>
+    </BrowserRouter>
   );
 }
