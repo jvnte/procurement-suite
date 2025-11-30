@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 from asklio_api.config import AppConfig
 from asklio_api.intake import IntakeApi
 from asklio_api.models.commodity_group import CommodityGroupInfo
+from asklio_api.repository import ProcurementRequestStatus
 from asklio_api.shell import Shell, build_app
 
 
@@ -17,6 +18,13 @@ class StubIntake(IntakeApi):
 
     def is_valid_commodity_group(self, name: str) -> bool:
         return name == "Software"
+
+    def create_procurement_request(self): ...
+    def get_all_requests(self): ...
+    def get_request_by_id(self, request_id: str): ...
+    def update_request_status(
+        self, request_id: str, status: ProcurementRequestStatus
+    ): ...
 
 
 async def test_shell_can_be_shutdown(config: AppConfig):
@@ -36,7 +44,7 @@ async def test_shell_can_be_shutdown(config: AppConfig):
     await asyncio.wait_for(task, timeout=1.0)
 
 
-def test_post_intake_procurement_request_gives_201():
+def test_post_intake_request_gives_201():
     # given an app
     app = build_app(StubIntake())
 
@@ -68,7 +76,7 @@ def test_post_intake_procurement_request_gives_201():
     }
 
     with TestClient(app) as client:
-        response = client.post("/intake/procurement_request", json=payload)
+        response = client.post("/intake/request", json=payload)
 
         # then we get a 201 created response
         assert response.status_code == 201
@@ -77,7 +85,7 @@ def test_post_intake_procurement_request_gives_201():
         }
 
 
-def test_post_intake_procurement_request_raises_400():
+def test_post_intake_request_raises_400():
     # given an app
     app = build_app(StubIntake())
 
@@ -102,7 +110,7 @@ def test_post_intake_procurement_request_raises_400():
     }
 
     with TestClient(app) as client:
-        response = client.post("/intake/procurement_request", json=payload)
+        response = client.post("/intake/request", json=payload)
 
         # then we get a 400 bad request response
         assert response.status_code == 400
