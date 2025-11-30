@@ -25,16 +25,11 @@ def build_app(intake: IntakeApi) -> FastAPI:
 
     mcp = FastMCP()
     mcp.resource(
-        name="Get Commodity Groups",
+        name="get-commodity-groups",
         uri="data://commodity_groups",
         title="Get information about all valid commodity groups",
         description=inspect.getdoc(intake.get_commodity_groups),
     )(intake.get_commodity_groups)
-    mcp.tool(
-        name="Perform Procurement Request",
-        title="Try to perform a procurement request",
-        description=inspect.getdoc(intake.create_procurement_request),
-    )(intake.create_procurement_request)
     mcp_app = mcp.http_app(path="/mcp")
 
     @asynccontextmanager

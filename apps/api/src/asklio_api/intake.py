@@ -19,7 +19,6 @@ class IntakeApi(Protocol):
     def create_procurement_request(
         self,
         request: ProcurementRequestCreate,
-        ctx: Context | None = None,
     ) -> dict[str, str]: ...
     def get_all_requests(self) -> list[ProcurementRequestStored]: ...
     def get_request_by_id(self, request_id: str) -> ProcurementRequestStored | None: ...
@@ -50,11 +49,7 @@ class Intake(IntakeApi):
         return self.commodity_groups
 
     def create_procurement_request(
-        self,
-        request: ProcurementRequestCreate = Field(
-            ..., description="The request payload of a procurement request"
-        ),
-        ctx: Context | None = None,
+        self, request: ProcurementRequestCreate
     ) -> dict[str, str]:
         """Try to perform a procurement request"""
         if not self.is_valid_commodity_group(request.commodity_group):
