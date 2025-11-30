@@ -262,6 +262,9 @@ export default function Intake() {
         <Typography variant="h4" component="h1" gutterBottom>
           Create Procurement Request
         </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+          Fill in the form manually or upload a PDF document to auto-fill the fields
+        </Typography>
 
         <Snackbar
           open={!!error}
@@ -288,10 +291,6 @@ export default function Intake() {
         <Box sx={{ display: 'flex', gap: 3, mt: 3, flexDirection: { xs: 'column', md: 'row' } }}>
           {/* Left Column - Form */}
           <Paper sx={{ p: 3, flex: 1 }}>
-            <Typography variant="h6" gutterBottom>
-              Procurement Request Form
-            </Typography>
-
             <Box component="form" onSubmit={handleSubmit}>
             <Stack spacing={3}>
               <Typography variant="h6" gutterBottom>
@@ -459,10 +458,6 @@ export default function Intake() {
               <Typography variant="h6" gutterBottom>
                 Document Upload
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Upload a PDF to auto-fill the form fields.
-              </Typography>
-
               <Box>
                 {!uploadedFile ? (
                   <Button
