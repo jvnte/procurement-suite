@@ -1,9 +1,6 @@
 import json
 from typing import Protocol
 
-from fastmcp import Context
-from pydantic import Field
-
 from asklio_api.models.commodity_group import CommodityGroupInfo
 from asklio_api.models.procurement import ProcurementRequestCreate
 from asklio_api.repository import (
@@ -53,7 +50,6 @@ class Intake(IntakeApi):
     ) -> dict[str, str]:
         """Try to perform a procurement request"""
         if not self.is_valid_commodity_group(request.commodity_group):
-            # TODO Return something useful for the Agent
             raise CommodityGroupNotFoundException
 
         # Store the request in the repository

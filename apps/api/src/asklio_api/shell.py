@@ -1,10 +1,8 @@
-import inspect
 from contextlib import asynccontextmanager
 from typing import AsyncIterator, TypedDict, cast
 
-from fastapi import APIRouter, Depends, FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastmcp import FastMCP
 from uvicorn import Config, Server
 
 from asklio_api.config import AppConfig
@@ -20,25 +18,10 @@ class ShellState(TypedDict):
 
 def build_app(intake: IntakeApi) -> FastAPI:
     @asynccontextmanager
-    async def app_lifespan(app: FastAPI):
-        yield
+    async def app_lifespan(app: FastAPI) -> AsyncIterator[ShellState]:
+        yield {"intake": intake}
 
-    mcp = FastMCP()
-    mcp.resource(
-        name="get-commodity-groups",
-        uri="data://commodity_groups",
-        title="Get information about all valid commodity groups",
-        description=inspect.getdoc(intake.get_commodity_groups),
-    )(intake.get_commodity_groups)
-    mcp_app = mcp.http_app(path="/mcp")
-
-    @asynccontextmanager
-    async def combined_lifespan(app: FastAPI) -> AsyncIterator[ShellState]:
-        async with app_lifespan(app):
-            async with mcp_app.lifespan(app):
-                yield {"intake": intake}
-
-    app = FastAPI(lifespan=combined_lifespan)
+    app = FastAPI(lifespan=app_lifespan)
 
     # Add CORS middleware
     app.add_middleware(
@@ -49,7 +32,6 @@ def build_app(intake: IntakeApi) -> FastAPI:
         allow_headers=["*"],
     )
 
-    app.mount("/v1", mcp_app)
     app.include_router(intake_router)
     return app
 

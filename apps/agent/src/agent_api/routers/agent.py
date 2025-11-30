@@ -26,8 +26,40 @@ async def intake_document(
     Returns:
         Dictionary containing file metadata and size
     """
-    # Read the file contents as binary
     contents = await file.read()
+
     agent_result = await intake_agent.complete(contents)
 
     return agent_result.output
+    # return ProcurementRequestCreate(
+    #     requestor_name="John Doe",
+    #     title="Office Supplies and IT Equipment",
+    #     vendor_name="Global Tech Solutions GmbH",
+    #     vat_id="DE123456789",
+    #     commodity_group="IT Services",
+    #     order_lines=[
+    #         OrderLine(
+    #             position_description="Dell Latitude Laptop 15 inch",
+    #             unit_price=899.99,
+    #             amount=5,
+    #             unit="pieces",
+    #             total_price=4499.95,
+    #         ),
+    #         OrderLine(
+    #             position_description="Microsoft Office 365 Business License",
+    #             unit_price=12.50,
+    #             amount=10,
+    #             unit="licenses",
+    #             total_price=125.00,
+    #         ),
+    #         OrderLine(
+    #             position_description="Ergonomic Office Chair",
+    #             unit_price=250.00,
+    #             amount=3,
+    #             unit="pieces",
+    #             total_price=750.00,
+    #         ),
+    #     ],
+    #     total_cost=5374.95,
+    #     department="IT Department",
+    # )
