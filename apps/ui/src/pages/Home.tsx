@@ -1,46 +1,21 @@
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import Link from '@mui/material/Link';
-import Slider from '@mui/material/Slider';
-import PopoverMenu from '../PopoverMenu';
-import ProTip from '../ProTip';
-
-function Copyright() {
-  return (
-    <Typography
-      variant="body2"
-      align="center"
-      sx={{
-        color: 'text.secondary',
-      }}
-    >
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
 
 export default function Home() {
   return (
-    <Container maxWidth="sm">
-      <div className="my-4">
-        <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
-          Material UI Vite example with Tailwind CSS in TypeScript
+    <Container maxWidth="lg">
+      <Box sx={{ my: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Home
         </Typography>
-        <Slider
-          className="my-4"
-          defaultValue={30}
-          classes={{ active: 'shadow-none' }}
-          slotProps={{ thumb: { className: 'hover:shadow-none' } }}
-        />
-        <PopoverMenu />
-        <ProTip />
-        <Copyright />
-      </div>
+        <Paper sx={{ p: 3, mt: 3 }}>
+          <Typography variant="body1">
+            Home page content goes here.
+          </Typography>
+        </Paper>
+      </Box>
     </Container>
   );
 }
