@@ -17,4 +17,4 @@ RUN uv sync --frozen
 EXPOSE 8081
 
 # Run the application
-CMD ["uv", "run", "python", "-m", "asklio_api.main"]
+CMD ["uv", "run", "python", "-m", "procurement_api.main"]

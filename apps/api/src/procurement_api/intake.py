@@ -1,9 +1,9 @@
 import json
 from typing import Protocol
 
-from asklio_api.models.commodity_group import CommodityGroupInfo
-from asklio_api.models.procurement import ProcurementRequestCreate
-from asklio_api.repository import (
+from procurement_api.models.commodity_group import CommodityGroupInfo
+from procurement_api.models.procurement import ProcurementRequestCreate
+from procurement_api.repository import (
     ProcurementRequestStatus,
     ProcurementRequestStored,
     Repository,

@@ -1,7 +1,7 @@
 import asyncio
 
-from asklio_api.app import App
-from asklio_api.config import AppConfig
+from procurement_api.app import App
+from procurement_api.config import AppConfig
 
 
 async def test_app_can_be_shutdown(config: AppConfig):

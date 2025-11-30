@@ -1,9 +1,9 @@
 import asyncio
 
-from asklio_api.config import AppConfig
-from asklio_api.intake import Intake
-from asklio_api.repository import InMemoryRepository
-from asklio_api.shell import Shell
+from procurement_api.config import AppConfig
+from procurement_api.intake import Intake
+from procurement_api.repository import InMemoryRepository
+from procurement_api.shell import Shell
 
 
 class App:

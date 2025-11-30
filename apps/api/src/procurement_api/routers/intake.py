@@ -3,10 +3,10 @@ from typing import Any, cast
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 
-from asklio_api.intake import CommodityGroupNotFoundException, IntakeApi
-from asklio_api.models.commodity_group import CommodityGroupInfo
-from asklio_api.models.procurement import ProcurementRequestCreate
-from asklio_api.repository import ProcurementRequestStatus
+from procurement_api.intake import CommodityGroupNotFoundException, IntakeApi
+from procurement_api.models.commodity_group import CommodityGroupInfo
+from procurement_api.models.procurement import ProcurementRequestCreate
+from procurement_api.repository import ProcurementRequestStatus
 
 router = APIRouter(prefix="/intake", tags=["intake"])
 

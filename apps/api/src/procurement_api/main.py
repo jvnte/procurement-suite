@@ -2,8 +2,8 @@ import asyncio
 
 from dotenv import load_dotenv
 
-from asklio_api.app import App
-from asklio_api.config import AppConfig
+from procurement_api.app import App
+from procurement_api.config import AppConfig
 
 if __name__ == "__main__":
     load_dotenv()

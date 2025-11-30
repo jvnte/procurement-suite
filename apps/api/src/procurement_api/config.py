@@ -4,7 +4,7 @@ import json
 import os
 from typing import NamedTuple
 
-from asklio_api.models.commodity_group import CommodityGroupInfo
+from procurement_api.models.commodity_group import CommodityGroupInfo
 
 
 class AppConfig(NamedTuple):

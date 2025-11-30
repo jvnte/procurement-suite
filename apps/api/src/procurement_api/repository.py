@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Protocol
 from uuid import uuid4
 
-from asklio_api.models.procurement import ProcurementRequestCreate
+from procurement_api.models.procurement import ProcurementRequestCreate
 
 
 class ProcurementRequestStatus(str, Enum):

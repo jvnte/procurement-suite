@@ -5,9 +5,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import Config, Server
 
-from asklio_api.config import AppConfig
-from asklio_api.intake import IntakeApi
-from asklio_api.routers.intake import router as intake_router
+from procurement_api.config import AppConfig
+from procurement_api.intake import IntakeApi
+from procurement_api.routers.intake import router as intake_router
 
 
 class ShellState(TypedDict):

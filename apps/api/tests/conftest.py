@@ -3,7 +3,7 @@ import tempfile
 
 import pytest
 
-from asklio_api.config import AppConfig
+from procurement_api.config import AppConfig
 
 
 @pytest.fixture

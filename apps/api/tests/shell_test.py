@@ -2,11 +2,11 @@ import asyncio
 
 from fastapi.testclient import TestClient
 
-from asklio_api.config import AppConfig
-from asklio_api.intake import IntakeApi
-from asklio_api.models.commodity_group import CommodityGroupInfo
-from asklio_api.repository import ProcurementRequestStatus
-from asklio_api.shell import Shell, build_app
+from procurement_api.config import AppConfig
+from procurement_api.intake import IntakeApi
+from procurement_api.models.commodity_group import CommodityGroupInfo
+from procurement_api.repository import ProcurementRequestStatus
+from procurement_api.shell import Shell, build_app
 
 
 class StubIntake(IntakeApi):
