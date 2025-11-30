@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import Config, Server
 
-from agent_api.agent import AgentApi, IntakeAgent
+from agent_api.agent import AgentApi
 from agent_api.config import AppConfig
 from agent_api.routers.agent import router as agent_router
 
@@ -39,7 +39,7 @@ def build_app(intake_agent: AgentApi) -> FastAPI:
 class Shell:
     """Provide user access to our application."""
 
-    def __init__(self, config: AppConfig, intake_agent: IntakeAgent) -> None:
+    def __init__(self, config: AppConfig, intake_agent: AgentApi) -> None:
         self.config = config
         self.app = build_app(intake_agent)
         self.server: Server | None = None
