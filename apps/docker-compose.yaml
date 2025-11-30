@@ -25,6 +25,18 @@ services:
     networks:
       - asklio-network
 
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+      args:
+        - VITE_AGENT_API_URL=http://localhost:8082
+        - VITE_INTAKE_API_URL=http://localhost:8081
+    ports:
+      - "8080:80"
+    networks:
+      - asklio-network
+
 networks:
   asklio-network:
     driver: bridge
