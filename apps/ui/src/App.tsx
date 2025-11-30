@@ -3,6 +3,7 @@ import { Box, CssBaseline, Toolbar } from '@mui/material';
 import Sidebar from './components/Sidebar';
 import Home from './pages/Home';
 import Intake from './pages/Intake';
+import Requests from './pages/Requests';
 
 export default function App() {
   return (
@@ -16,6 +17,8 @@ export default function App() {
             <Route path="/" element={<Navigate to="/home" replace />} />
             <Route path="/home" element={<Home />} />
             <Route path="/intake" element={<Intake />} />
+            <Route path="/requests" element={<Requests />} />
+            <Route path="/requests/:id" element={<Requests />} />
           </Routes>
         </Box>
       </Box>

@@ -1,6 +1,7 @@
 import { Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import DescriptionIcon from '@mui/icons-material/Description';
+import ListAltIcon from '@mui/icons-material/ListAlt';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const drawerWidth = 240;
@@ -8,6 +9,7 @@ const drawerWidth = 240;
 const menuItems = [
   { text: 'Home', icon: <HomeIcon />, path: '/home' },
   { text: 'Intake', icon: <DescriptionIcon />, path: '/intake' },
+  { text: 'Requests', icon: <ListAltIcon />, path: '/requests' },
 ];
 
 export default function Sidebar() {
