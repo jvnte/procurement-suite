@@ -1,3 +1,15 @@
+# PDF files
+*.pdf
+*.Pdf
+*.PDF
+
+# macOS
+.DS_Store
+
+# ============================================================================
+# Python
+# ============================================================================
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -135,18 +147,48 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-# IDEs
-.vscode/
+# uv
+uv.lock
+
+# ============================================================================
+# Node.js / JavaScript
+# ============================================================================
+
+# Logs
+logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
+node_modules
+
+# Build outputs
+dist
+dist-ssr
+
+# ============================================================================
+# IDEs and Editors
+# ============================================================================
+
+.vscode/*
+!.vscode/extensions.json
 .idea/
 *.swp
 *.swo
 *~
-.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# uv
-uv.lock
-
+# ============================================================================
 # Local development
+# ============================================================================
+
 *.local
 .env.local
 .env.*.local
