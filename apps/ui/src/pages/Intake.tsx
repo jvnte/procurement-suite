@@ -224,6 +224,9 @@ export default function Intake() {
       await response.json();
       setSuccess('Procurement request submitted successfully!');
 
+      // Trigger refresh of sidebar counter
+      window.dispatchEvent(new CustomEvent('requestSubmitted'));
+
       // Reset form
       setFormData({
         requestor_name: '',

@@ -142,6 +142,9 @@ export default function Requests() {
       const updatedData = await response.json();
       setSelectedRequest(updatedData);
       setSuccess('Status updated successfully!');
+
+      // Trigger refresh of sidebar counter
+      window.dispatchEvent(new CustomEvent('requestSubmitted'));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update status');
     } finally {
