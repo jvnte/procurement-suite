@@ -2,20 +2,20 @@ from typing import cast
 
 from fastapi import APIRouter, Depends, File, Request, UploadFile, status
 
-from agent_api.agent import IntakeAgent
+from agent_api.agent import AgentApi
 from agent_api.models.procurement import ProcurementRequestCreate
 
 router = APIRouter(prefix="/agent", tags=["agent"])
 
 
-def get_intake(request: Request) -> IntakeAgent:
+def get_intake(request: Request) -> AgentApi:
     """Get intake Agent from request state."""
-    return cast(IntakeAgent, request.state.intake_agent)
+    return cast(AgentApi, request.state.intake_agent)
 
 
 @router.post("/intake", status_code=status.HTTP_200_OK)
 async def intake_document(
-    file: UploadFile = File(...), intake_agent: IntakeAgent = Depends(get_intake)
+    file: UploadFile = File(...), intake_agent: AgentApi = Depends(get_intake)
 ) -> ProcurementRequestCreate:
     """
     Accept a PDF file upload and convert it to binary.

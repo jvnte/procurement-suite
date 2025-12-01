@@ -1,11 +1,11 @@
 import asyncio
 import io
-from typing import Any
+from typing import Any, Sequence
 
 from fastapi.testclient import TestClient
-from pydantic_ai import AgentRunResult
+from pydantic_ai import AgentRunResult, BinaryContent
 
-from agent_api.agent import AgentApi
+from agent_api.agent import Agent, IntakeAgentApi
 from agent_api.config import AppConfig
 from agent_api.models.procurement import (
     CommodityGroup,
@@ -15,27 +15,18 @@ from agent_api.models.procurement import (
 from agent_api.shell import Shell, build_app
 
 
-class MockAgentRunResult:
-    """Mock implementation of AgentRunResult for testing."""
-
-    def __init__(self, output: ProcurementRequestCreate):
-        self.output = output
-        self.data: Any = None
-        self.usage: Any = None
-
-
-class StubIntakeAgent(AgentApi):
-    """Stub implementation of IntakeAgent for testing."""
+class StubAgent(Agent):
+    """Stub implementation of Agent for testing."""
 
     def __init__(self) -> None:
-        self.last_file_content: bytes | None = None
+        self.last_user_prompt: str | Sequence[str | BinaryContent | dict[str, Any]] | None = None
         self.response: ProcurementRequestCreate | None = None
 
-    async def complete(
-        self, file_content: bytes
+    async def run(
+        self, user_prompt: str | Sequence[str | BinaryContent | dict[str, Any]]
     ) -> AgentRunResult[ProcurementRequestCreate]:
-        """Mock complete method that returns a predefined response."""
-        self.last_file_content = file_content
+        """Mock run method that returns a predefined response."""
+        self.last_user_prompt = user_prompt
 
         if self.response is None:
             # Return a default response
@@ -57,13 +48,16 @@ class StubIntakeAgent(AgentApi):
                 department="IT",
             )
 
-        return MockAgentRunResult(self.response)  # type: ignore[return-value]
+        # Create a simple result object with just the output attribute
+        result = type('Result', (), {'output': self.response})()
+        return result  # type: ignore[return-value]
 
 
 async def test_shell_can_be_shutdown(config: AppConfig):
     # given a running shell
-    agent = StubIntakeAgent()
-    shell = Shell(config, agent)
+    stub_agent = StubAgent()
+    agent_api = IntakeAgentApi(stub_agent)
+    shell = Shell(config, agent_api)
     loop = asyncio.get_event_loop()
     task = loop.create_task(shell.run())
 
@@ -79,8 +73,9 @@ async def test_shell_can_be_shutdown(config: AppConfig):
 
 def test_post_agent_intake_without_file_gives_422():
     # given an app
-    stub_agent = StubIntakeAgent()
-    app = build_app(stub_agent)
+    stub_agent = StubAgent()
+    agent_api = IntakeAgentApi(stub_agent)
+    app = build_app(agent_api)
 
     # when we try to post without a file
     with TestClient(app) as client:
@@ -92,9 +87,10 @@ def test_post_agent_intake_without_file_gives_422():
 
 def test_post_agent_intake_gives_200():
     # given an app with agent that has no predefined response
-    stub_agent = StubIntakeAgent()
+    stub_agent = StubAgent()
     # don't set a response, should use default
-    app = build_app(stub_agent)
+    agent_api = IntakeAgentApi(stub_agent)
+    app = build_app(agent_api)
 
     # when we upload a PDF file
     pdf_content = b"%PDF-1.4\n%test"

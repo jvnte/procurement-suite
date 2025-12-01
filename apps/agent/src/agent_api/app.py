@@ -1,6 +1,6 @@
 import asyncio
 
-from agent_api.agent import IntakeAgent
+from agent_api.agent import IntakeAgent, IntakeAgentApi
 from agent_api.config import AppConfig
 from agent_api.shell import Shell
 
@@ -10,8 +10,9 @@ class App:
 
     def __init__(self, config: AppConfig) -> None:
         self.config = config
-        self.intake_agent = IntakeAgent(openai_api_key=config.openai_key)
-        self.shell = Shell(self.config, self.intake_agent)
+        agent = IntakeAgent(openai_api_key=config.openai_key)
+        self.intake_agent_api = IntakeAgentApi(agent=agent)
+        self.shell = Shell(self.config, self.intake_agent_api)
 
     async def run(self) -> None:
         async with asyncio.TaskGroup() as tg:
