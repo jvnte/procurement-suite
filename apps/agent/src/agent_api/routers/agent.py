@@ -8,14 +8,14 @@ from agent_api.models.procurement import ProcurementRequestCreate
 router = APIRouter(prefix="/agent", tags=["agent"])
 
 
-def get_intake(request: Request) -> AgentApi:
+def get_intake_api(request: Request) -> AgentApi:
     """Get intake Agent from request state."""
-    return cast(AgentApi, request.state.intake_agent)
+    return cast(AgentApi, request.state.intake_agent_api)
 
 
 @router.post("/intake", status_code=status.HTTP_200_OK)
 async def intake_document(
-    file: UploadFile = File(...), intake_agent: AgentApi = Depends(get_intake)
+    file: UploadFile = File(...), intake_agent_api: AgentApi = Depends(get_intake_api)
 ) -> ProcurementRequestCreate:
     """
     Accept a PDF file upload and convert it to binary.
@@ -28,7 +28,7 @@ async def intake_document(
     """
     contents = await file.read()
 
-    agent_result = await intake_agent.complete(contents)
+    agent_result = await intake_agent_api.complete(contents)
 
     return agent_result.output
     # return ProcurementRequestCreate(

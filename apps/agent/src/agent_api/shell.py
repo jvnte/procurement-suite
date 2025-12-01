@@ -13,13 +13,13 @@ from agent_api.routers.agent import router as agent_router
 class ShellState(TypedDict):
     """State that is shared between requests."""
 
-    intake_agent: AgentApi
+    intake_agent_api: AgentApi
 
 
-def build_app(intake_agent: AgentApi) -> FastAPI:
+def build_app(intake_agent_api: AgentApi) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[ShellState]:
-        yield {"intake_agent": intake_agent}
+        yield {"intake_agent_api": intake_agent_api}
 
     app = FastAPI(lifespan=lifespan)
 
